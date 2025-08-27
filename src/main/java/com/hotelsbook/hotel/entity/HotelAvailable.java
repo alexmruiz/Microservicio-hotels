@@ -1,5 +1,6 @@
 package com.hotelsbook.hotel.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -21,6 +22,7 @@ public class HotelAvailable {
 
     private String number;
 
+    @Column(name = "city_name")
     private String cityName;
 
     //Getter and Setter

@@ -2,12 +2,15 @@ package com.hotelsbook.hotel.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class HotelServiceDto {
 
     private Long hotelId;
     
     private String hotelName;
 
+    @JsonProperty("service")
     private List<ServiceDto> services;
 
     //Getter and Setter
