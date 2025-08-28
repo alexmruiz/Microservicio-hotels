@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.hotelsbook.hotel.dto.HotelAvailableDto;
@@ -28,6 +29,9 @@ public class HotelService {
 
 	@Autowired
 	private HotelReviewClient hotelReviewClient;
+
+	@Value("${server.url}")
+	private String serverUrl;
 
 	public List<HotelAvailableDto> getAvailableHotelsWithServicesAndReviews(Date startDate, Date endDate,
 			Integer cityId) {
@@ -59,6 +63,8 @@ public class HotelService {
 
 			// Paso 6: Agrupar y mapear los resultados
 			return availableHotels.stream().map(hotel -> {
+				String imageUrl = serverUrl + "/images/" + hotel.getPicture();
+				hotel.setPicture(imageUrl);
 				HotelAvailableDto dto = new HotelAvailableDto(hotel);
 				dto.setServices(servicesByHotelId.getOrDefault(hotel.getId(), Collections.emptyList()));
 				dto.setAverageCalification(reviewsByHotelId.getOrDefault(hotel.getId(), null));

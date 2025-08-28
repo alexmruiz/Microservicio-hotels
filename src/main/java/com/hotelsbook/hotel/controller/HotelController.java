@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hotelsbook.hotel.dto.HotelAvailableDto;
 import com.hotelsbook.hotel.response.ErrorResponse;
+import com.hotelsbook.hotel.service.CityService;
 import com.hotelsbook.hotel.service.HotelService;
 
+@CrossOrigin(origins = "http://localhost:4200/")
 @RestController
 @RequestMapping("/api/hotels")
 public class HotelController {
@@ -27,9 +30,13 @@ public class HotelController {
     @Autowired
     private HotelService hotelService;
 
+    @Autowired
+    private CityService cityService;
+
     /**
      * Obtiene los hoteles disponibles con sus servicios y reseñas en una ciudad
      * específica dentro de un rango de fechas.
+     * 
      * @param startDate
      * @param endDate
      * @param cityId
@@ -39,10 +46,17 @@ public class HotelController {
     public ResponseEntity<?> getAvailableHotelsWithServices(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
-            @RequestParam("cityId") Integer cityId) {
+            @RequestParam("cityName") String cityName) {
 
         try {
             logger.info("método getAvailableHotelsWtichServices");
+
+            Integer cityId = cityService.getCityByName(cityName);
+
+            if (cityId == 0) {
+                return new ResponseEntity<>(new ErrorResponse(404, "No se encontraron registros"),
+                        HttpStatus.NOT_FOUND);
+            }
 
             List<HotelAvailableDto> hotels = hotelService.getAvailableHotelsWithServicesAndReviews(startDate, endDate,
                     cityId);
